@@ -34,13 +34,13 @@ del get_versions
 
 import os.path as op
 from pyannote.database import Database
-from pyannote.database.protocol import SpeakerDiarizationProtocol
+from pyannote.database.protocol import SpeakerDiarizationProtocol, SpeakerVerificationProtocol
 from pyannote.parser import MDTMParser
 
 # this protocol defines a speaker diarization protocol: as such, a few methods
 # needs to be defined: trn_iter, dev_iter, and tst_iter.
 
-class MyProtocol1(SpeakerDiarizationProtocol):
+class TimitSpeakerVerificationProtocol(SpeakerVerificationProtocol):
     """My first speaker diarization protocol """
 
     def trn_iter(self):
@@ -52,7 +52,7 @@ class MyProtocol1(SpeakerDiarizationProtocol):
         # this is obviously not mandatory but pyannote.parser conveniently
         # provides a built-in parser for MDTM files...
         annotations = MDTMParser().read(
-            op.join(data_dir, 'protocol1.train.mdtm'))
+            op.join(data_dir, 'TimitSpeakerVerificationProtocol.train.mdtm'))
 
         # iterate over each file in training set
         for uri in sorted(annotations.uris):
@@ -64,7 +64,7 @@ class MyProtocol1(SpeakerDiarizationProtocol):
             # to yield dictionary with the following fields:
             yield {
                 # name of the database class
-                'database': 'MyDatabase',
+                'database': 'Timit',
                 # unique file identifier
                 'uri': uri,
                 # reference as pyannote.core.Annotation instance
@@ -94,13 +94,13 @@ class MyProtocol1(SpeakerDiarizationProtocol):
 # this is where we define each protocol for this database.
 # without this, `pyannote.database.get_protocol` won't be able to find them...
 
-class MyDatabase(Database):
+class Timit(Database):
     """MyDatabase database"""
 
     def __init__(self, preprocessors={}, **kwargs):
-        super(MyDatabase, self).__init__(preprocessors=preprocessors, **kwargs)
+        super(Timit, self).__init__(preprocessors=preprocessors, **kwargs)
 
         # register the first protocol: it will be known as
         # MyDatabase.SpeakerDiarization.MyFirstProtocol
         self.register_protocol(
-            'SpeakerDiarization', 'MyFirstProtocol', MyProtocol1)
+            'SpeakerVerification', 'TimitSpeakerVerificationProtocol', TimitSpeakerVerificationProtocol)

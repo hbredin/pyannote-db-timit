@@ -32,14 +32,14 @@ from setuptools import setup, find_packages
 
 setup(
     # replace "mydatabase" by the name of your database
-    name='pyannote.db.mydatabase',
+    name='pyannote.db.timit',
 
     # replace "MyDatabase" by the name of your database
-    description="MyDatabase plugin for pyannote-database",
+    description="Timit plugin for pyannote-database",
 
     # replace with your information
-    author='Hervé Bredin',
-    author_email='bredin@limsi.fr',
+    author='Royal Jain',
+    author_email='royal.jain@seernet.io',
 
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
@@ -47,7 +47,7 @@ setup(
 
     # replace "MyDatabase" by the new name of MyDatabase directory
     package_data={
-        'MyDatabase': [
+        'Timit': [
             'data/*',
         ],
     },
@@ -71,6 +71,6 @@ setup(
     # replace MyDatabase by the name of your database (using CamelCase)
     entry_points="""
         [pyannote.database.databases]
-        MyDatabase=MyDatabase:MyDatabase
+        Timit=Timit:Timit
     """
 )
