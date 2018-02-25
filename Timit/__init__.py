@@ -83,13 +83,77 @@ class TimitSpeakerVerificationProtocol(SpeakerVerificationProtocol):
 
     def dev_iter(self):
         # here, you should do the same as above, but for the development set
-        for _ in []:
-            yield
+        # absolute path to 'data' directory where annotations are stored
+        data_dir = op.join(op.dirname(op.realpath(__file__)), 'data')
+
+        # in this example, we assume annotations are distributed in MDTM format.
+        # this is obviously not mandatory but pyannote.parser conveniently
+        # provides a built-in parser for MDTM files...
+        annotations = MDTMParser().read(
+            op.join(data_dir, 'TimitSpeakerVerificationProtocol.val.mdtm'))
+
+        # iterate over each file in training set
+        for uri in sorted(annotations.uris):
+
+            # get annotations as pyannote.core.Annotation instance
+            annotation = annotations(uri)
+
+            # `trn_iter` (as well as `dev_iter` and `tst_iter`) are expected
+            # to yield dictionary with the following fields:
+            yield {
+                # name of the database class
+                'database': 'Timit',
+                # unique file identifier
+                'uri': uri,
+                # reference as pyannote.core.Annotation instance
+                'annotation': annotation
+            }
+
+            # optionally, an 'annotated' field can be added, whose value is
+            # a pyannote.core.Timeline instance containing the set of regions
+            # that were actually annotated (e.g. some files might only be
+            # partially annotated).
+
+            # this field can be used later to only evaluate those regions,
+            # for instance. whenever possible, please provide the 'annotated'
+            # field even if it trivially contains segment [0, file_duration].
 
     def tst_iter(self):
         # here, you should do the same as above, but for the test set
-        for _ in []:
-            yield
+        data_dir = op.join(op.dirname(op.realpath(__file__)), 'data')
+
+        # in this example, we assume annotations are distributed in MDTM format.
+        # this is obviously not mandatory but pyannote.parser conveniently
+        # provides a built-in parser for MDTM files...
+        annotations = MDTMParser().read(
+            op.join(data_dir, 'TimitSpeakerVerificationProtocol.test.mdtm'))
+
+        # iterate over each file in training set
+        for uri in sorted(annotations.uris):
+
+            # get annotations as pyannote.core.Annotation instance
+            annotation = annotations(uri)
+
+            # `trn_iter` (as well as `dev_iter` and `tst_iter`) are expected
+            # to yield dictionary with the following fields:
+            yield {
+                # name of the database class
+                'database': 'Timit',
+                # unique file identifier
+                'uri': uri,
+                # reference as pyannote.core.Annotation instance
+                'annotation': annotation
+            }
+
+            # optionally, an 'annotated' field can be added, whose value is
+            # a pyannote.core.Timeline instance containing the set of regions
+            # that were actually annotated (e.g. some files might only be
+            # partially annotated).
+
+            # this field can be used later to only evaluate those regions,
+            # for instance. whenever possible, please provide the 'annotated'
+            # field even if it trivially contains segment [0, file_duration].
+
 
 # this is where we define each protocol for this database.
 # without this, `pyannote.database.get_protocol` won't be able to find them...

@@ -24,35 +24,53 @@ for filename in filenames:
 
 usrs_list = list(usrs_set)
 
-train_list = usrs_list[:450]
-val_list = usrs_list[450:530]
-test_list = usrs_list[:450]
+train_list = usrs_list[:530]
+test_list = usrs_list[530:]
 
 train_set = set(train_list)
-val_set = set(val_list)
 test_set = set(test_list)
 
-f_train_mtdm = open('/Users/royal/Desktop/pyannote-db-template/Timit/data/TimitSpeakerVerificationProtocol.train.mdtm', 'w')
-f_val_mtdm = open('/Users/royal/Desktop/pyannote-db-template/Timit/data/TimitSpeakerVerificationProtocol.val.mdtm', 'w')
-f_test_mtdm = open('/Users/royal/Desktop/pyannote-db-template/Timit/data/TimitSpeakerVerificationProtocol.test.mdtm', 'w')
+f_train_mtdm = open('/Users/royal/Desktop/pyannote-db-timit/Timit/data/TimitSpeakerVerificationProtocol.train.mdtm', 'w')
+f_val_mtdm = open('/Users/royal/Desktop/pyannote-db-timit/Timit/data/TimitSpeakerVerificationProtocol.val.mdtm', 'w')
+f_test_mtdm = open('/Users/royal/Desktop/pyannote-db-timit/Timit/data/TimitSpeakerVerificationProtocol.test.mdtm', 'w')
 
 
 train_ctr, val_ctr, test_ctr = 0, 0, 0
+
+usr_str = {}
+
 for filename in filenames:
     usr = filename.split('_')[0]
     dur = get_duration(datapath+filename)
     mdtm_line = '{} 1 0.0 {} {} {} {} {}\n'.format(filename.split('.')[0], str(dur), 'speaker',
                                                  'NA', 'unknown', usr )
 
-    if usr in train_set:
-        train_ctr += 1
-        f_train_mtdm.write(mdtm_line)
-    elif usr in val_set:
-        val_ctr += 1
-        f_val_mtdm.write(mdtm_line)
+    if usr not in usr_str:
+        usr_str[usr] = []
+
+    usr_str[usr].append(mdtm_line)
+
+
+for usr in usr_str:
+    lines = usr_str[usr]
+
+    if usr in test_set:
+        for line in lines:
+            test_ctr += 1
+            f_test_mtdm.write(line)
+
     else:
-        test_ctr += 1
-        f_test_mtdm.write(mdtm_line)
+        train_portion = int(0.8*len(lines))
+        train_lines = lines[:train_portion]
+        val_lines = lines[train_portion:]
+
+        for line in train_lines:
+            train_ctr += 1
+            f_train_mtdm.write(line)
+
+        for line in val_lines:
+            val_ctr += 1
+            f_val_mtdm.write(line)
 
 
 print('TRAIN : {} VAL : {} TEST : {}'.format(train_ctr, val_ctr, test_ctr))
